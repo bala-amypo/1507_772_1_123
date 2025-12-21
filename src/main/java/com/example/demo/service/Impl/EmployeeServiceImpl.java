@@ -32,4 +32,25 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee existing = getEmployeeById(id);
         existing.setFullName(employee.getFullName());
         existing.setDepartment(employee.getDepartment());
-        existing.setJobTitle(employe
+        existing.setJobTitle(employee.getJobTitle());
+        return employeeRepository.save(existing);
+    }
+
+    @Override
+    public Employee getEmployeeById(Long id) {
+        return employeeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+    }
+
+    @Override
+    public List<Employee> getAllEmployees() {
+        return employeeRepository.findByActiveTrue();
+    }
+
+    @Override
+    public void deactivateEmployee(Long id) {
+        Employee emp = getEmployeeById(id);
+        emp.setActive(false);
+        employeeRepository.save(emp);
+    }
+}
