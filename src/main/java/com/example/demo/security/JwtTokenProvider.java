@@ -15,6 +15,7 @@ public class JwtTokenProvider {
     @Value("${jwt.expiration}")
     private long jwtExpirationMs;
 
+    // Generate JWT token
     public String generateToken(String username, String role) {
         return Jwts.builder()
                 .setSubject(username)
@@ -25,6 +26,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    // Extract username from token
     public String getUsernameFromToken(String token) {
         return Jwts.parser()
                 .setSigningKey(jwtSecret)
@@ -33,8 +35,14 @@ public class JwtTokenProvider {
                 .getSubject();
     }
 
+    // Validate token
     public boolean validateToken(String token) {
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
             return true;
-        } catch (SignatureException | Malforme
+        } catch (SignatureException | MalformedJwtException | ExpiredJwtException |
+                 UnsupportedJwtException | IllegalArgumentException ex) {
+            return false;
+        }
+    }
+} 
