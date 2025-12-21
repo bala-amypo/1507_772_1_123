@@ -14,7 +14,8 @@ public class SwaggerConfig {
         return new OpenAPI()
                 // You need to change the port as per your server
                 .servers(List.of(
-                        new Server().url("http://localhost:9001/")
+                       new Server().url("http://localhost:9001/")
+
                         
                 ));
         }
