@@ -20,7 +20,7 @@ public class SwaggerConfig {
                         .description("REST API for Employee Skills Management (Security Disabled)"))
                 .servers(List.of(
                         // This matches the external URL provided by your environment
-                        new Server().url("https://9380.408procr.amypo.ai/")
+                        new Server().url("https://9031.pro604cr.amypo.ai/")
                 ));
     }
 }
