@@ -2,12 +2,20 @@ package com.example.demo.util;
 
 import java.util.Set;
 
-public class ProficiencyValidator {
+public final class ProficiencyValidator {
 
-    private static final Set<String> VALID_LEVELS =
-            Set.of("Beginner", "Intermediate", "Advanced", "Expert");
+    private static final Set<String> ALLOWED_LEVELS = Set.of(
+            "Beginner",
+            "Intermediate",
+            "Advanced",
+            "Expert"
+    );
 
-    public static boolean isValid(String level) {
-        return VALID_LEVELS.contains(level);
+    private ProficiencyValidator() {
+        // utility class – no instances
+    }
+
+    public static boolean isValid(String proficiencyLevel) {
+        return proficiencyLevel != null && ALLOWED_LEVELS.contains(proficiencyLevel);
     }
 }
