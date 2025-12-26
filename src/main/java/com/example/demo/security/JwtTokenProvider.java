@@ -41,4 +41,8 @@ public class JwtTokenProvider {
             return false;
         }
     }
+    public String getEmailFromToken(String token) {
+    return getUsernameFromToken(token);
+    }
+
 }
