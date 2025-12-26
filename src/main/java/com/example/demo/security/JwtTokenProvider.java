@@ -70,4 +70,15 @@ public class JwtTokenProvider {
             throw new RuntimeException("Invalid JWT token");
         }
     }
+
+    // Validate token
+public boolean validateToken(String token) {
+    try {
+        Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws(token);
+        return true;
+    } catch (JwtException | IllegalArgumentException ex) {
+        return false;
+    }
+}
+
 }
