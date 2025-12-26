@@ -24,7 +24,6 @@ public class SearchQueryRecord {
         this.searchedAt = new Timestamp(System.currentTimeMillis());
     }
 
-
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -36,4 +35,6 @@ public class SearchQueryRecord {
 
     public Integer getResultsCount() { return resultsCount; }
     public void setResultsCount(Integer resultsCount) { this.resultsCount = resultsCount; }
+
+    public Timestamp getSearchedAt() { return searchedAt; }
 }
