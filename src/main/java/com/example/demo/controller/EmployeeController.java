@@ -10,29 +10,34 @@ import java.util.List;
 @RequestMapping("/api/employees")
 public class EmployeeController {
 
-    private final EmployeeService service;
+    private final EmployeeService employeeService;
 
-    public EmployeeController(EmployeeService service) {
-        this.service = service;
+    public EmployeeController(EmployeeService employeeService) {
+        this.employeeService = employeeService;
     }
 
     @PostMapping
     public Employee create(@RequestBody Employee employee) {
-        return service.createEmployee(employee);
+        return employeeService.createEmployee(employee);
+    }
+
+    @PutMapping("/{id}")
+    public Employee update(@PathVariable Long id, @RequestBody Employee employee) {
+        return employeeService.updateEmployee(id, employee);
     }
 
     @GetMapping("/{id}")
-    public Employee get(@PathVariable Long id) {
-        return service.getEmployeeById(id);
+    public Employee getById(@PathVariable Long id) {
+        return employeeService.getEmployeeById(id);
     }
 
     @GetMapping
     public List<Employee> getAll() {
-        return service.getAllEmployees();
+        return employeeService.getAllEmployees();
     }
 
     @PutMapping("/{id}/deactivate")
     public void deactivate(@PathVariable Long id) {
-        service.deactivateEmployee(id);
+        employeeService.deactivateEmployee(id);
     }
 }

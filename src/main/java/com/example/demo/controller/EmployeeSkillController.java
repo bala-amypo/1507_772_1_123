@@ -10,35 +10,37 @@ import java.util.List;
 @RequestMapping("/api/employee-skills")
 public class EmployeeSkillController {
 
-    private final EmployeeSkillService service;
+    private final EmployeeSkillService employeeSkillService;
 
-    public EmployeeSkillController(EmployeeSkillService service) {
-        this.service = service;
+    public EmployeeSkillController(EmployeeSkillService employeeSkillService) {
+        this.employeeSkillService = employeeSkillService;
     }
 
     @PostMapping
-    public EmployeeSkill create(@RequestBody EmployeeSkill mapping) {
-        return service.createEmployeeSkill(mapping);
+    public EmployeeSkill create(@RequestBody EmployeeSkill employeeSkill) {
+        return employeeSkillService.createEmployeeSkill(employeeSkill);
     }
 
     @PutMapping("/{id}")
-    public EmployeeSkill update(@PathVariable Long id,
-                                @RequestBody EmployeeSkill mapping) {
-        return service.updateEmployeeSkill(id, mapping);
+    public EmployeeSkill update(
+            @PathVariable Long id,
+            @RequestBody EmployeeSkill employeeSkill
+    ) {
+        return employeeSkillService.updateEmployeeSkill(id, employeeSkill);
     }
 
     @GetMapping("/employee/{employeeId}")
     public List<EmployeeSkill> getByEmployee(@PathVariable Long employeeId) {
-        return service.getSkillsForEmployee(employeeId);
+        return employeeSkillService.getSkillsForEmployee(employeeId);
     }
 
     @GetMapping("/skill/{skillId}")
     public List<EmployeeSkill> getBySkill(@PathVariable Long skillId) {
-        return service.getEmployeesBySkill(skillId);
+        return employeeSkillService.getEmployeesBySkill(skillId);
     }
 
     @PutMapping("/{id}/deactivate")
     public void deactivate(@PathVariable Long id) {
-        service.deactivateEmployeeSkill(id);
+        employeeSkillService.deactivateEmployeeSkill(id);
     }
 }
