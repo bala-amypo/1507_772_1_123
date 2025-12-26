@@ -1,25 +1,82 @@
 package com.example.demo.config;
 
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import com.example.demo.security.JwtAuthenticationFilter;
+import com.example.demo.security.JwtTokenProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.io.IOException;
+import java.util.List;
 
 @Configuration
-public class ServletConfig {
+@EnableWebSecurity
+public class SecurityConfig {
 
+    /* =========================
+       JWT TOKEN PROVIDER BEAN
+       ========================= */
     @Bean
-    public ServletRegistrationBean<HttpServlet> helloServlet() {
-        HttpServlet servlet = new HttpServlet() {
-            @Override
-            protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-                resp.getWriter().write("Hello from simple servlet");
-            }
-        };
-        return new ServletRegistrationBean<>(servlet, "/hello-servlet");
+    public JwtTokenProvider jwtTokenProvider() {
+        return new JwtTokenProvider();
+    }
+
+    /* =========================
+       JWT FILTER BEAN
+       ========================= */
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter(
+            JwtTokenProvider jwtTokenProvider
+    ) {
+        return new JwtAuthenticationFilter(jwtTokenProvider);
+    }
+
+    /* =========================
+       CORS CONFIGURATION (FIXES SWAGGER ERROR)
+       ========================= */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("*"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
+    }
+
+    /* =========================
+       SECURITY FILTER CHAIN
+       ========================= */
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+        http
+            .cors(cors -> {})               // ✅ ENABLE CORS
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                        "/auth/**",
+                        "/hello-servlet",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/v3/api-docs/**"
+                ).permitAll()
+                .anyRequest().permitAll()   // ✅ allow API calls for testing
+            );
+
+        return http.build();
     }
 }
