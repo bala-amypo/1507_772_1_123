@@ -1,7 +1,7 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "search_query_records")
@@ -17,11 +17,14 @@ public class SearchQueryRecord {
 
     private Integer resultsCount;
 
-    private Timestamp searchedAt;
+    private LocalDateTime searchedAt;
 
     @PrePersist
-    protected void onCreate() {
-        this.searchedAt = new Timestamp(System.currentTimeMillis());
+    public void onCreate() {
+        this.searchedAt = LocalDateTime.now();
+        if (this.resultsCount == null) {
+            this.resultsCount = 0;
+        }
     }
 
     public Long getId() { return id; }
@@ -36,5 +39,5 @@ public class SearchQueryRecord {
     public Integer getResultsCount() { return resultsCount; }
     public void setResultsCount(Integer resultsCount) { this.resultsCount = resultsCount; }
 
-    public Timestamp getSearchedAt() { return searchedAt; }
+    public LocalDateTime getSearchedAt() { return searchedAt; }
 }

@@ -1,6 +1,7 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "skills")
@@ -18,6 +19,9 @@ public class Skill {
     private String description;
 
     private Boolean active = true;
+
+    @OneToMany(mappedBy = "skill")
+    private List<EmployeeSkill> employeeSkills;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
