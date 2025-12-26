@@ -11,7 +11,7 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     private final String secretKey = "secret-key";
-    private final long validityInMs = 86400000; // 1 day
+    private final long validityInMs = 86400000;
 
     public String generateToken(String username) {
         Date now = new Date();
