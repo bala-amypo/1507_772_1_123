@@ -6,8 +6,6 @@ public class EmployeeSearchRequest {
 
     private List<String> skills;
 
-    public EmployeeSearchRequest() {}
-
     public List<String> getSkills() {
         return skills;
     }
