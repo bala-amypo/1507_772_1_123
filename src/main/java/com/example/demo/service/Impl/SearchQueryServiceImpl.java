@@ -25,18 +25,19 @@ public class SearchQueryServiceImpl implements SearchQueryService {
     @Override
     public List<Employee> searchEmployeesBySkills(List<String> skills, Long userId) {
         if (skills == null || skills.isEmpty()) {
-            throw new IllegalArgumentException("must not be empty");
+            throw new IllegalArgumentException("Skills list must not be empty");
         }
 
-        List<Employee> employees =
-                employeeSkillRepository.findEmployeesByAllSkillNames(skills, userId);
+        List<Employee> employees = employeeSkillRepository.findEmployeesByAllSkillNames(skills, userId);
 
         SearchQueryRecord record = new SearchQueryRecord();
         record.setSearcherId(userId);
         record.setSkillsRequested(String.join(",", skills));
         record.setResultsCount(employees.size());
 
-        recordRepository.save(record);
+        // Save query using our added method
+        saveQuery(record);
+
         return employees;
     }
 
@@ -49,5 +50,10 @@ public class SearchQueryServiceImpl implements SearchQueryService {
     @Override
     public List<SearchQueryRecord> getQueriesForUser(Long userId) {
         return recordRepository.findBySearcherId(userId);
+    }
+
+    @Override
+    public SearchQueryRecord saveQuery(SearchQueryRecord record) {
+        return recordRepository.save(record);
     }
 }
