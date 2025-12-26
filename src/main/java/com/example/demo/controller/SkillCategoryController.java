@@ -10,35 +10,34 @@ import java.util.List;
 @RequestMapping("/api/skill-categories")
 public class SkillCategoryController {
 
-    private final SkillCategoryService service;
+    private final SkillCategoryService skillCategoryService;
 
-    public SkillCategoryController(SkillCategoryService service) {
-        this.service = service;
+    public SkillCategoryController(SkillCategoryService skillCategoryService) {
+        this.skillCategoryService = skillCategoryService;
     }
 
     @PostMapping
     public SkillCategory create(@RequestBody SkillCategory category) {
-        return service.createCategory(category);
+        return skillCategoryService.createCategory(category);
     }
 
     @PutMapping("/{id}")
-    public SkillCategory update(@PathVariable Long id,
-                                @RequestBody SkillCategory category) {
-        return service.updateCategory(id, category);
+    public SkillCategory update(@PathVariable Long id, @RequestBody SkillCategory category) {
+        return skillCategoryService.updateCategory(id, category);
     }
 
     @GetMapping("/{id}")
-    public SkillCategory get(@PathVariable Long id) {
-        return service.getCategoryById(id);
+    public SkillCategory getById(@PathVariable Long id) {
+        return skillCategoryService.getCategoryById(id);
     }
 
     @GetMapping
     public List<SkillCategory> getAll() {
-        return service.getAllCategories();
+        return skillCategoryService.getAllCategories();
     }
 
     @PutMapping("/{id}/deactivate")
     public void deactivate(@PathVariable Long id) {
-        service.deactivateCategory(id);
+        skillCategoryService.deactivateCategory(id);
     }
 }

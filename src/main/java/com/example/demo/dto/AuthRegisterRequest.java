@@ -5,9 +5,7 @@ public class AuthRegisterRequest {
     private String fullName;
     private String email;
     private String password;
-    private String role; // USER / ADMIN
-
-    public AuthRegisterRequest() {}
+    private String role;
 
     public String getFullName() {
         return fullName;
@@ -32,7 +30,7 @@ public class AuthRegisterRequest {
     public void setPassword(String password) {
         this.password = password;
     }
- 
+
     public String getRole() {
         return role;
     }
