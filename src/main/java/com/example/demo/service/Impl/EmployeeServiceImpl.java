@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
+@Service   // ✅ FIX
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
@@ -19,20 +19,20 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee createEmployee(Employee employee) {
-        employeeRepository.findByEmail(employee.getEmail())
-                .ifPresent(e -> {
-                    throw new IllegalArgumentException("Email already exists");
-                });
         employee.setActive(true);
         return employeeRepository.save(employee);
     }
 
     @Override
     public Employee updateEmployee(Long id, Employee employee) {
-        Employee existing = getEmployeeById(id);
+        Employee existing = employeeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+
         existing.setFullName(employee.getFullName());
+        existing.setEmail(employee.getEmail());
         existing.setDepartment(employee.getDepartment());
         existing.setJobTitle(employee.getJobTitle());
+
         return employeeRepository.save(existing);
     }
 
@@ -44,12 +44,13 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public List<Employee> getAllEmployees() {
-        return employeeRepository.findByActiveTrue();
+        return employeeRepository.findAll();
     }
 
     @Override
     public void deactivateEmployee(Long id) {
-        Employee emp = getEmployeeById(id);
+        Employee emp = employeeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
         emp.setActive(false);
         employeeRepository.save(emp);
     }

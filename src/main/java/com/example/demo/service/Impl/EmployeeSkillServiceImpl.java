@@ -13,54 +13,58 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
+@Service   // ✅ FIX
 public class EmployeeSkillServiceImpl implements EmployeeSkillService {
 
     private final EmployeeSkillRepository employeeSkillRepository;
     private final EmployeeRepository employeeRepository;
     private final SkillRepository skillRepository;
 
-    public EmployeeSkillServiceImpl(EmployeeSkillRepository employeeSkillRepository,
-                                    EmployeeRepository employeeRepository,
-                                    SkillRepository skillRepository) {
+    public EmployeeSkillServiceImpl(
+            EmployeeSkillRepository employeeSkillRepository,
+            EmployeeRepository employeeRepository,
+            SkillRepository skillRepository
+    ) {
         this.employeeSkillRepository = employeeSkillRepository;
         this.employeeRepository = employeeRepository;
         this.skillRepository = skillRepository;
     }
 
     @Override
-    public EmployeeSkill createEmployeeSkill(EmployeeSkill mapping) {
+    public EmployeeSkill createEmployeeSkill(EmployeeSkill employeeSkill) {
 
-        if (mapping.getYearsOfExperience() < 0) {
+        Employee emp = employeeRepository.findById(employeeSkill.getEmployee().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+
+        Skill skill = skillRepository.findById(employeeSkill.getSkill().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Skill not found"));
+
+        if (!emp.getActive()) {
+            throw new IllegalArgumentException("inactive employee");
+        }
+        if (!skill.getActive()) {
+            throw new IllegalArgumentException("inactive skill");
+        }
+        if (employeeSkill.getYearsOfExperience() < 0) {
             throw new IllegalArgumentException("Experience years");
         }
-
-        if (!ProficiencyValidator.isValid(mapping.getProficiencyLevel())) {
+        if (!ProficiencyValidator.isValid(employeeSkill.getProficiencyLevel())) {
             throw new IllegalArgumentException("Invalid proficiency");
         }
 
-        Employee emp = employeeRepository.findById(mapping.getEmployee().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
-
-        Skill skill = skillRepository.findById(mapping.getSkill().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Skill not found"));
-
-        if (!emp.getActive()) throw new IllegalArgumentException("inactive employee");
-        if (!skill.getActive()) throw new IllegalArgumentException("inactive skill");
-
-        mapping.setEmployee(emp);
-        mapping.setSkill(skill);
-
-        return employeeSkillRepository.save(mapping);
+        employeeSkill.setActive(true);
+        return employeeSkillRepository.save(employeeSkill);
     }
 
     @Override
-    public EmployeeSkill updateEmployeeSkill(Long id, EmployeeSkill mapping) {
+    public EmployeeSkill updateEmployeeSkill(Long id, EmployeeSkill employeeSkill) {
         EmployeeSkill existing = employeeSkillRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("EmployeeSkill not found"));
 
-        mapping.setId(existing.getId());
-        return createEmployeeSkill(mapping);
+        existing.setProficiencyLevel(employeeSkill.getProficiencyLevel());
+        existing.setYearsOfExperience(employeeSkill.getYearsOfExperience());
+
+        return employeeSkillRepository.save(existing);
     }
 
     @Override

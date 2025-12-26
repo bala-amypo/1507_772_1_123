@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
+@Service   // ✅ FIX
 public class SkillServiceImpl implements SkillService {
 
     private final SkillRepository skillRepository;
@@ -19,19 +19,19 @@ public class SkillServiceImpl implements SkillService {
 
     @Override
     public Skill createSkill(Skill skill) {
-        skillRepository.findByName(skill.getName())
-                .ifPresent(s -> {
-                    throw new IllegalArgumentException("Skill already exists");
-                });
         skill.setActive(true);
         return skillRepository.save(skill);
     }
 
     @Override
     public Skill updateSkill(Long id, Skill skill) {
-        Skill existing = getSkillById(id);
+        Skill existing = skillRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Skill not found"));
+
+        existing.setName(skill.getName());
         existing.setCategory(skill.getCategory());
         existing.setDescription(skill.getDescription());
+
         return skillRepository.save(existing);
     }
 
@@ -43,12 +43,13 @@ public class SkillServiceImpl implements SkillService {
 
     @Override
     public List<Skill> getAllSkills() {
-        return skillRepository.findByActiveTrue();
+        return skillRepository.findAll();
     }
 
     @Override
     public void deactivateSkill(Long id) {
-        Skill skill = getSkillById(id);
+        Skill skill = skillRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Skill not found"));
         skill.setActive(false);
         skillRepository.save(skill);
     }

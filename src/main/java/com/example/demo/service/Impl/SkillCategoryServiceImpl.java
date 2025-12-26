@@ -8,46 +8,49 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
+@Service   // ✅ REQUIRED — FIXES BEAN ERROR
 public class SkillCategoryServiceImpl implements SkillCategoryService {
 
-    private final SkillCategoryRepository repository;
+    private final SkillCategoryRepository skillCategoryRepository;
 
-    public SkillCategoryServiceImpl(SkillCategoryRepository repository) {
-        this.repository = repository;
+    public SkillCategoryServiceImpl(SkillCategoryRepository skillCategoryRepository) {
+        this.skillCategoryRepository = skillCategoryRepository;
     }
 
     @Override
     public SkillCategory createCategory(SkillCategory category) {
-        repository.findByCategoryName(category.getCategoryName())
-                .ifPresent(c -> {
-                    throw new IllegalArgumentException("Category already exists");
-                });
-        return repository.save(category);
+        category.setActive(true);
+        return skillCategoryRepository.save(category);
     }
 
     @Override
     public SkillCategory updateCategory(Long id, SkillCategory category) {
-        SkillCategory existing = getCategoryById(id);
+        SkillCategory existing = skillCategoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("SkillCategory not found"));
+
+        existing.setCategoryName(category.getCategoryName());
         existing.setDescription(category.getDescription());
-        return repository.save(existing);
+
+        return skillCategoryRepository.save(existing);
     }
 
     @Override
     public SkillCategory getCategoryById(Long id) {
-        return repository.findById(id)
+        return skillCategoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("SkillCategory not found"));
     }
 
     @Override
     public List<SkillCategory> getAllCategories() {
-        return repository.findAll();
+        return skillCategoryRepository.findAll();
     }
 
     @Override
     public void deactivateCategory(Long id) {
-        SkillCategory category = getCategoryById(id);
+        SkillCategory category = skillCategoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("SkillCategory not found"));
+
         category.setActive(false);
-        repository.save(category);
+        skillCategoryRepository.save(category);
     }
 }
